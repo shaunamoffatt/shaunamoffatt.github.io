@@ -17589,7 +17589,7 @@
     }
   }
 
-  // src/script.js
+  // script.js
   var scene = new Scene();
   var geometry = new BoxGeometry(1, 1, 1);
   var material = new MeshBasicMaterial({ color: 16711680 });
