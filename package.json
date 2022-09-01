@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "three": "^0.144.0",
+    "url-parse": "^1.5.10"
+  },
+  "name": "shaunamoffatt.github.io",
+  "main": "./src/script.js",
+  "description": "",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "esbuild src/script.js --bundle --outfile=dist/bundle.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shaunamoffatt/shaunamoffatt.github.io.git"
+  },
+  "keywords": [],
+  "author": "Shauna Moffatt",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shaunamoffatt/shaunamoffatt.github.io/issues"
+  },
+  "homepage": "https://github.com/shaunamoffatt/shaunamoffatt.github.io#readme",
+  "devDependencies": {
+    "esbuild": "^0.15.6"
+  }
+}
