@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "lodash-es": "^4.17.21",
     "three": "^0.144.0",
     "url-parse": "^1.5.10"
   },
@@ -9,7 +10,8 @@
   "version": "1.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "esbuild script.js --bundle --outfile=dist/bundle.js"
+    "build": "esbuild scripts/script.js --bundle --platform=node --outfile=dist/bundle.js",
+    "dev": "webpack --mode development"
   },
   "repository": {
     "type": "git",
@@ -23,6 +25,9 @@
   },
   "homepage": "https://github.com/shaunamoffatt/shaunamoffatt.github.io#readme",
   "devDependencies": {
-    "esbuild": "^0.15.6"
+    "esbuild": "^0.15.6",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0",
+    "webpack-dev-server": "^4.10.1"
   }
 }
