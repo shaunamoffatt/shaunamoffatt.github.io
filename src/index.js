@@ -9,8 +9,8 @@ const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 
 const screen = {
-  width: 800,
-  height: 500,
+  width: 900,
+  height: 700,
 };
 
 //camera
