@@ -1,27 +1,34 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCSSExtractPlugin = require('mini-css-extract-plugin')
-const path = require('path')
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
+const path = require("path");
 
 module.exports = {
+  entry: path.resolve(__dirname, "../src/index.js"),
+  output: {
+    filename: "index.[contenthash].js",
+    path: path.resolve(__dirname, "../dist"),
+  },
   devtool: "source-map",
   plugins: [
     new CopyWebpackPlugin({
-      patterns: [{ from: path.resolve(__dirname, "static") }],
+      patterns: [{ from: path.resolve(__dirname, "../static") }],
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, "src", "index.html"),
+      filename: "./index.html", //relative to root of the application
+      template: path.resolve(__dirname, "../src/index.html"),
+      title: "dilllly",
       minify: true,
     }),
     new MiniCSSExtractPlugin(),
-  //  new CleanWebpackPlugin()
+    //  new CleanWebpackPlugin()
   ],
   module: {
     rules: [
       // HTML
       {
-        test: /\.(html)$/,
-        use: ["html-loader"],
+        test: /\.html$/,
+        loader: "html-loader",
       },
 
       // JS
@@ -33,10 +40,10 @@ module.exports = {
 
       // CSS
       {
-        test: /\.css$/,
+        test: /\.css$/i,
         use: [MiniCSSExtractPlugin.loader, "css-loader"],
       },
-
+      
       // Images
       {
         test: /\.(jpg|png|gif|svg)$/,
