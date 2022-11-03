@@ -1,7 +1,7 @@
 body {
     margin: 0px;
     height: 100vh;
- background-color: pink;
+ background-color: none;
 }
 canvas {
     display: block;
