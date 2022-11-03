@@ -8,7 +8,7 @@
     "url-parse": "^1.5.10"
   },
   "name": "shaunamoffatt.github.io",
-  "main": ".script.js",
+  "main": ".index.js",
   "description": "",
   "version": "1.0.0",
   "proxy": "http://localhost:8080",

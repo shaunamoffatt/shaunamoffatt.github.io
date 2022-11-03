@@ -1,5 +1,10 @@
-body{
-    background-color: red;
+body {
+    margin: 0px;
+    height: 100vh;
+ background-color: pink;
+}
+canvas {
+    display: block;
 }
 
 /*# sourceMappingURL=main.css.map*/

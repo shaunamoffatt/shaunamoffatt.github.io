@@ -1,0 +1,1 @@
+import*as THREE from"three";import"./style.css";import{World}from"./World/World.js";async function main(){const o=document.querySelector("#scene-container"),r=new World(o);await r.init(),r.start()}main().catch((o=>{console.error(o)}));

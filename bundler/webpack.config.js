@@ -4,9 +4,17 @@ const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
 module.exports = {
-  entry: path.resolve(__dirname, "../src/index.js"),
+  //mode: 'production',
+  performance: {
+      //hints: false,
+      maxEntrypointSize: 512000,
+      maxAssetSize: 512000
+  },
+  entry: [
+    path.resolve(__dirname, "../src/index.js"),
+],
   output: {
-    filename: "index.[contenthash].js",
+   filename: "index.[contenthash].js",
     path: path.resolve(__dirname, "../dist"),
   },
   devtool: "source-map",
