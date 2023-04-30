@@ -34,7 +34,7 @@ class World {
   }
  
   async init() {
-    myModel = await loadModel("././/static/models/me_test.glb", "shaunaModel");
+    myModel = await loadModel("././/static/models/me.glb", "shaunaModel");
     scene.add(myModel.model);
     loop.updatables.push(myModel);
     console.log("My model in init :",myModel);
