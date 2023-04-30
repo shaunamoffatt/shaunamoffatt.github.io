@@ -1,15 +1,14 @@
-import { AnimationMixer } from 'three';
+import { AnimationMixer } from "three";
 
 function setupModel(data) {
   const model = data.scene.children[0];
-  const clip = data.animations[0];
-
+  const clips = data.animations;
   const mixer = new AnimationMixer(model);
-  const action = mixer.clipAction(clip);
-  action.play();
-
+  // Play all animations
+  clips.forEach(function (clip) {
+    mixer.clipAction(clip).play();
+  });
   model.tick = (delta) => mixer.update(delta);
-
   return model;
 }
 

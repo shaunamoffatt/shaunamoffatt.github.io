@@ -1,8 +1,11 @@
 body {
-    margin: 0px;
-    height: 100vh;
- background-color: none;
+  /* remove margins and scroll bars */
+  margin: 0;
+  overflow: hidden;
+  height: 100vh;
+  background-color: none;
 }
+
 canvas {
-    display: block;
+  display: block;
 }
