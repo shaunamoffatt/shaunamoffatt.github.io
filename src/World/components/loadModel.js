@@ -1,14 +1,9 @@
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import {
-  NoBlending,
-  NormalBlending,
-  AdditiveBlending,
-  TrianglesDrawMode,
-} from "three";
-import { AnimationMixer } from "three";
+import { NoBlending, Vector3 } from "three";
+
 import { setupModel } from "./setUpModel.js";
 
-async function loadModel(url, name) {
+async function loadModel(url, name, scale) {
   const loader = new GLTFLoader();
 
   const modelData = await loader.loadAsync(url, undefined, function (error) {
@@ -16,6 +11,7 @@ async function loadModel(url, name) {
   });
   const model = setupModel(modelData);
   model.name = name;
+  model.scale.set(scale,scale,scale);// = new Vector3(100,100,100);
   model.position.set(0, 0, 0);
   model.traverse(function (obj) {
     if (obj.isMesh) {

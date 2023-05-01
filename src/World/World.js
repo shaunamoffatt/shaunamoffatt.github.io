@@ -32,17 +32,35 @@ class World {
 
     const resizer = new Resizer(container, camera, renderer);
   }
- 
+
   async init() {
-    myModel = await loadModel("././/static/models/me.glb", "shaunaModel");
+    myModel = await loadModel("././/static/models/me.glb", "shaunaModel", 1);
     scene.add(myModel.model);
     loop.updatables.push(myModel);
-    console.log("My model in init :",myModel);
+    console.log("My model in init :", myModel);
 
-    scene.add(new THREE.AxesHelper(5))
-    scene.add(new THREE.GridHelper(8, 8))
+    scene.add(new THREE.AxesHelper(5));
+    scene.add(new THREE.GridHelper(8, 8));
+
+    //Load Speech bubble
+    const loader = new THREE.TextureLoader();
+    var speechBubbleTexture = loader.load(
+      "././/static/textures/speechBubble.png"
+    );
+    speechBubbleTexture.magFilter = THREE.NearestFilter;
+    var speechBubbleMaterial = new THREE.SpriteMaterial({
+      map: speechBubbleTexture,
+    });
+    var speechBubbleSprite = new THREE.Sprite(speechBubbleMaterial);
+    speechBubbleSprite.scale.set(6, 6, 6);
+    speechBubbleSprite.position.set(3.5,15,0);
+    scene.add(speechBubbleSprite);
 
     //Debug
+    //speechbubble
+    gui.add(speechBubbleSprite.position, "y").min(-50).max(50).step(0.01);
+    gui.add(speechBubbleSprite.position, "x").min(-50).max(50).step(0.01);
+    //camera
     gui.add(camera.position, "y").min(-50).max(50).step(0.01);
     gui.add(camera.position, "z").min(-50).max(50).step(0.01);
   }
@@ -53,7 +71,6 @@ class World {
 
   start() {
     loop.start();
-
   }
 
   stop() {
