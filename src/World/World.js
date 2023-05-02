@@ -1,4 +1,3 @@
-//import { MeshPhongMaterial, BoxGeometry, Mesh, AxesHelper, Vector3 } from "three";
 import * as THREE from "three";
 import { createCamera } from "./components/camera.js";
 import { createLights } from "./components/lights.js";
@@ -9,6 +8,7 @@ import { Resizer } from "./systems/Resizer.js";
 import { Loop } from "./systems/Loop.js";
 import * as dat from "dat.gui";
 import { loadModel } from "./components/loadModel.js";
+import { Text, preloadFont } from "troika-three-text";
 const gui = new dat.GUI();
 
 let camera;
@@ -17,6 +17,9 @@ let scene;
 let loop;
 let controls;
 let myModel = new THREE.Object3D();
+let myText = new Text();
+let font;
+let speechBubbleSprite;
 
 class World {
   constructor(container) {
@@ -25,7 +28,7 @@ class World {
     scene = createScene();
     loop = new Loop(camera, scene, renderer);
     controls = mouseMovement();
-
+    font = preloadFont({font: "././/static/Pulang.ttf", characters: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!"});
     const { ambientLight, mainLight } = createLights();
 
     scene.add(ambientLight, mainLight);
@@ -51,26 +54,51 @@ class World {
     var speechBubbleMaterial = new THREE.SpriteMaterial({
       map: speechBubbleTexture,
     });
-    var speechBubbleSprite = new THREE.Sprite(speechBubbleMaterial);
+    speechBubbleSprite = new THREE.Sprite(speechBubbleMaterial);
     speechBubbleSprite.scale.set(6, 6, 6);
-    speechBubbleSprite.position.set(3.5,15,0);
+    speechBubbleSprite.position.set(3.5, 15, 0);
     scene.add(speechBubbleSprite);
 
-    //Debug
-    //speechbubble
-    gui.add(speechBubbleSprite.position, "y").min(-50).max(50).step(0.01);
-    gui.add(speechBubbleSprite.position, "x").min(-50).max(50).step(0.01);
-    //camera
-    gui.add(camera.position, "y").min(-50).max(50).step(0.01);
-    gui.add(camera.position, "z").min(-50).max(50).step(0.01);
+    // Set properties to configure:
+    myText.fontSize = 0.75;
+    myText.position.set(1.22, 16.4, 1);
+    myText.color = 0x22114e;
+    myText.font = "././/static/Pulang.ttf";
+    scene.add(myText);
+    //myText.sync;
+    loop.textUpdatables.push(myText);
+
+    this.debugText();
   }
 
+  debugText() {
+    gui.add(speechBubbleSprite.position, "y").min(-50).max(50).step(0.01);
+    gui.add(speechBubbleSprite.position, "x").min(-50).max(50).step(0.01);
+
+    gui
+      .add(myText.position, "y")
+      .min(-50)
+      .max(50)
+      .step(0.0001)
+      .name("Speech Bubble Text Y");
+    gui
+      .add(myText.position, "x")
+      .min(-50)
+      .max(50)
+      .step(0.0001)
+      .name("Speech Bubble Text X");
+    //camera
+    gui.add(camera.position, "y").min(-50).max(50).step(0.01).name("Camera Y");
+    gui.add(camera.position, "z").min(-50).max(50).step(0.01).name("Camera X");
+  }
   render() {
     renderer.render(scene, camera);
+   
   }
 
   start() {
     loop.start();
+    
   }
 
   stop() {

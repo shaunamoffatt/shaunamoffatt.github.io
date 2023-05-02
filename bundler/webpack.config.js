@@ -4,17 +4,15 @@ const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
 module.exports = {
-  //mode: 'production',
+  mode: "production",
   performance: {
-      //hints: false,
-      maxEntrypointSize: 512000,
-      maxAssetSize: 512000
+    //hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
   },
-  entry: [
-    path.resolve(__dirname, "../src/index.js"),
-],
+  entry: [path.resolve(__dirname, "../src/index.js")],
   output: {
-   filename: "index.js",
+    filename: "index.js",
     path: path.resolve(__dirname, "../dist"),
   },
   devtool: "source-map",
@@ -51,7 +49,7 @@ module.exports = {
         test: /\.css$/i,
         use: [MiniCSSExtractPlugin.loader, "css-loader"],
       },
-      
+
       // Images
       {
         test: /\.(jpg|png|gif|svg)$/,
@@ -59,7 +57,19 @@ module.exports = {
           {
             loader: "file-loader",
             options: {
-              outputPath: "assets/images/",
+              outputPath: "static/textures/",
+            },
+          },
+        ],
+      },
+      // Models
+      {
+        test: /\.(glb|fbx)$/,
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              outputPath: "static/models/",
             },
           },
         ],
@@ -72,7 +82,7 @@ module.exports = {
           {
             loader: "file-loader",
             options: {
-              outputPath: "assets/fonts/",
+              outputPath: "static/",
             },
           },
         ],
