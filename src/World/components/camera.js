@@ -8,7 +8,6 @@ function createCamera() {
     0.01,
     1000
   );
-  //camera.position.set(-6, 12.6, 13.7);
   var pos = CAMERA_STARTING_POSITION;
   camera.position.set(pos.x, pos.y, pos.z);
 

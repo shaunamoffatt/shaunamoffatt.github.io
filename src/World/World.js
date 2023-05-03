@@ -28,7 +28,11 @@ class World {
     scene = createScene();
     loop = new Loop(camera, scene, renderer);
     controls = mouseMovement();
-    font = preloadFont({font: "././/static/Pulang.ttf", characters: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!"});
+    font = preloadFont({
+      font: "././/static/Pulang.ttf",
+      characters:
+        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!",
+    });
     const { ambientLight, mainLight } = createLights();
 
     scene.add(ambientLight, mainLight);
@@ -48,21 +52,22 @@ class World {
     //Load Speech bubble
     const loader = new THREE.TextureLoader();
     var speechBubbleTexture = loader.load(
-      "././/static/textures/speechBubble.png"
+      //"././/static/textures/speechBubble.png"
+      "././/static/textures/sBubble1.png"
     );
     speechBubbleTexture.magFilter = THREE.NearestFilter;
     var speechBubbleMaterial = new THREE.SpriteMaterial({
       map: speechBubbleTexture,
     });
     speechBubbleSprite = new THREE.Sprite(speechBubbleMaterial);
-    speechBubbleSprite.scale.set(6, 6, 6);
-    speechBubbleSprite.position.set(3.5, 15, 0);
+    speechBubbleSprite.scale.set(5, 4, 6);
+    speechBubbleSprite.position.set(3.5, 15.2, 0);
     scene.add(speechBubbleSprite);
 
     // Set properties to configure:
     myText.fontSize = 0.75;
     myText.position.set(1.22, 16.4, 1);
-    myText.color = 0x22114e;
+    myText.color = "black";
     myText.font = "././/static/Pulang.ttf";
     scene.add(myText);
     //myText.sync;
@@ -93,12 +98,10 @@ class World {
   }
   render() {
     renderer.render(scene, camera);
-   
   }
 
   start() {
     loop.start();
-    
   }
 
   stop() {
