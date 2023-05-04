@@ -7,11 +7,12 @@ const setSize = (container, camera, renderer) => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
   //Check if portrait or landscape
-  if (camera.aspect > 1) {
-    camera.position.z = CAMERA_STARTING_POSITION.z / camera.aspect;
+  if (camera.aspect < 0.9) {
+    camera.position.z = CAMERA_STARTING_POSITION.z * (1 + camera.aspect);
   } else {
     camera.position.z = CAMERA_STARTING_POSITION.z;
   }
+  camera.rotation.x = -0.2;
 };
 
 class Resizer {

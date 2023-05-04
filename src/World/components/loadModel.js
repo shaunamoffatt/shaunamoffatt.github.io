@@ -13,16 +13,14 @@ import {
 
 import { setupModel } from "./setUpModel.js";
 
-async function loadModel(url, name, scale) {
+async function loadModel(name, url, texUrl, scale) {
   const threeTone = new TextureLoader().load(
     "././/static/textures/gradientMaps/twoTone.jpg"
   );
   threeTone.minFilter = NearestFilter;
   threeTone.magFilter = NearestFilter;
 
-  const texture = new TextureLoader().load(
-    "././/static/textures/lambert1_Base_color.png"
-  );
+  const texture = new TextureLoader().load(texUrl);
   // immediately use the texture for material creation
   texture.flipY = false;
 

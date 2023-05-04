@@ -9,6 +9,7 @@ function createCamera() {
     1000
   );
   var pos = CAMERA_STARTING_POSITION;
+  console.log(CAMERA_STARTING_POSITION);
   camera.position.set(pos.x, pos.y, pos.z);
 
   return camera;
