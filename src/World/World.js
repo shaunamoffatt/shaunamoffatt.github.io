@@ -30,6 +30,7 @@ class World {
     scene = createScene();
     loop = new Loop(camera, scene, renderer);
     controls = mouseMovement();
+
     font = preloadFont({
       font: "././/static/Pulang.ttf",
       characters:
@@ -53,28 +54,28 @@ class World {
     loop.updatables.push(myModel);
     console.log("My model in init :", myModel);
 
-    myModel = await loadModel(
+    var room = await loadModel(
       "room1",
       "././/static/models/room1.glb",
       "././/static/textures/room1_tex.png",
-      1
+      1,6,0,0
     );
-    scene.add(myModel.model);
-    loop.updatables.push(myModel);
-    console.log("My model in init :", myModel);
+    scene.add(room.model);
+    loop.updatables.push(room);
+    console.log("My model in init :", room);
 
     scene.add(new THREE.AxesHelper(5));
-    scene.add(new THREE.GridHelper(8, 8));
+    scene.add(new THREE.GridHelper(8, 8,8));
 
     //Test simpleSprite
     sBubble = new simpleSprite(
       CONSTANTS.SPEECH_BUBBLE_SPRITE,
-      3.5, //x
+      3.75, //x
       15.2, //y
-      0, //z
+      -1, //z
       "././/static/textures/sBubble1.png", //url
-      5,
-      4 //scale
+      8,
+      6 //scale
     );
     scene.add(sBubble.sprite);
     loop.sprites.push(sBubble);
@@ -82,7 +83,7 @@ class World {
 
     // Set properties to configure:
     myText.fontSize = 0.75;
-    myText.position.set(1.22, 16.4, 1);
+    myText.position.set(1.22, 16.4, 0.5);
     myText.color = "black";
     myText.font = "././/static/Pulang.ttf";
     scene.add(myText);
@@ -93,8 +94,8 @@ class World {
   }
 
   debugText() {
-    gui.add(sBubble.sprite.position, "y").min(-50).max(50).step(0.01);
-    gui.add(sBubble.sprite.position, "x").min(-50).max(50).step(0.01);
+    gui.add(myModel.model.position, "x").min(-50).max(50).step(0.01).name("Character X");
+    gui.add(myModel.model.position, "z").min(-50).max(50).step(0.01).name("Character X");
 
     gui
       .add(myText.position, "y")
@@ -109,10 +110,9 @@ class World {
       .step(0.0001)
       .name("Speech Bubble Text X");
     //camera
-    gui.add(camera.position, "x").min(-50).max(50).step(0.01).name("Camera X");
-    gui.add(camera.position, "y").min(-50).max(50).step(0.01).name("Camera Y");
-    gui.add(camera.position, "z").min(-50).max(50).step(0.01).name("Camera Z");
-    
+    gui.add(camera.position, "x").min(-100).max(100).step(0.01).name("Camera X");
+    gui.add(camera.position, "y").min(-100).max(100).step(0.01).name("Camera Y");
+    gui.add(camera.position, "z").min(-100).max(100).step(0.01).name("Camera Z");
   }
   render() {
     renderer.render(scene, camera);

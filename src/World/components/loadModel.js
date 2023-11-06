@@ -13,7 +13,7 @@ import {
 
 import { setupModel } from "./setUpModel.js";
 
-async function loadModel(name, url, texUrl, scale) {
+async function loadModel(name, url, texUrl, scale, posx, posy, posz) {
   const threeTone = new TextureLoader().load(
     "././/static/textures/gradientMaps/twoTone.jpg"
   );
@@ -33,8 +33,10 @@ async function loadModel(name, url, texUrl, scale) {
   });
   const model = setupModel(modelData);
   model.name = name;
-  model.scale.set(scale, scale, scale); // = new Vector3(100,100,100);
-  model.position.set(0, 0, 0);
+  model.scale.set(scale, scale, scale); // = new Vector3(100,100,100);#
+  if (posx == null) model.position.set(0, 0, 0);
+  else model.position.set(posx, posy, posz);
+
   model.traverse(function (obj) {
     if (obj.isMesh) {
       //Sets the material to Opaque

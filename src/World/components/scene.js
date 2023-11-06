@@ -2,9 +2,7 @@ import { Color, Scene } from "three";
 
 function createScene() {
   const scene = new Scene();
-
-  scene.background = new Color("#FDFB8B");
-
+  scene.background = new Color("pink");
   return scene;
 }
 

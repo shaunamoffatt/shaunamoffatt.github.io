@@ -12,6 +12,7 @@ let speed = 70;
 let textLines = [
   "Hi! I'm Shauna." ,
   "I'm a Developer" ,
+  "And a coool gal"
 ];
 
 var characters = [];
