@@ -61,11 +61,17 @@ class World {
       1,6,0,0
     );
     scene.add(room.model);
-    loop.updatables.push(room);
-    console.log("My model in init :", room);
-
-    scene.add(new THREE.AxesHelper(5));
-    scene.add(new THREE.GridHelper(8, 8,8));
+    //loop.updatables.push(room);
+    var pottedplant = await loadModel(
+      "pottedplant",
+      "././/static/models/pottedplant.glb",
+      "././/static/textures/potteplant_tex.jpg",
+      1,-8.3,0,-6
+    );
+    scene.add(pottedplant.model);
+    this.debugModel(pottedplant.model);
+    //scene.add(new THREE.AxesHelper(5));
+    //scene.add(new THREE.GridHelper(8, 8,8));
 
     //Test simpleSprite
     sBubble = new simpleSprite(
@@ -90,25 +96,21 @@ class World {
     //myText.sync;
     loop.textUpdatables.push(myText);
 
-    this.debugText();
+   // this.debugCameraAndMe();
   }
 
-  debugText() {
-    gui.add(myModel.model.position, "x").min(-50).max(50).step(0.01).name("Character X");
-    gui.add(myModel.model.position, "z").min(-50).max(50).step(0.01).name("Character X");
+  //Handy function for figuring out where to place models
+  debugModel(model){
+    gui.add(model.position, "x").min(-50).max(50).step(0.01).name(model.name+ " X");
+    gui.add(model.position, "y").min(-50).max(50).step(0.01).name(model.name+ " y");
+    gui.add(model.position, "z").min(-50).max(50).step(0.01).name(model.name+ " z");
 
-    gui
-      .add(myText.position, "y")
-      .min(-50)
-      .max(50)
-      .step(0.0001)
-      .name("Speech Bubble Text Y");
-    gui
-      .add(myText.position, "x")
-      .min(-50)
-      .max(50)
-      .step(0.0001)
-      .name("Speech Bubble Text X");
+  }
+
+  debugCameraAndMe() {
+    gui.add(myModel.model.position, "x").min(-50).max(50).step(0.01).name("me X");
+    gui.add(myModel.model.position, "y").min(-50).max(50).step(0.01).name("me y");
+    gui.add(myModel.model.position, "z").min(-50).max(50).step(0.01).name("me z");
     //camera
     gui.add(camera.position, "x").min(-100).max(100).step(0.01).name("Camera X");
     gui.add(camera.position, "y").min(-100).max(100).step(0.01).name("Camera Y");
