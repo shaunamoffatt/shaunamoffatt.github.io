@@ -3,20 +3,20 @@ import {
   NoBlending,
   MeshBasicMaterial,
   TextureLoader,
-  Vector3,
   NearestFilter,
   LinearMipMapLinearFilter,
-  MeshLambertMaterial,
   MeshToonMaterial,
   DoubleSide,
 } from "three";
+import { LoadingManager } from "./loadingManager.js";
 
 import { setupModel } from "./setUpModel.js";
 
-async function loadModel(name, url, texUrl, scale, posx, posy, posz) {
+async function loadModel( name, url, texUrl, scale, posx, posy, posz) {
   const threeTone = new TextureLoader().load(
     "././/static/textures/gradientMaps/twoTone.jpg"
   );
+  
   threeTone.minFilter = NearestFilter;
   threeTone.magFilter = NearestFilter;
 
@@ -31,6 +31,7 @@ async function loadModel(name, url, texUrl, scale, posx, posy, posz) {
   const modelData = await loader.loadAsync(url, undefined, function (error) {
     console.error("ERROR LOADING " + name + "MODEL ", error);
   });
+
   const model = setupModel(modelData);
   model.name = name;
   model.scale.set(scale, scale, scale); // = new Vector3(100,100,100);#
@@ -48,11 +49,11 @@ async function loadModel(name, url, texUrl, scale, posx, posy, posz) {
       obj.material.map.magFilter = NearestFilter;
       obj.material.map.minFilter = LinearMipMapLinearFilter;
       obj.material.gradientMap = threeTone;
-      console.log(obj);
+     // console.log(obj);
     }
   });
-
-  console.log("model loaded!", modelData);
+ 
+  //console.log("model loaded!", modelData);
   return {
     model,
   };
