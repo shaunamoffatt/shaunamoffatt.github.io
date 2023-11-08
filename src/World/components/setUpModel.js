@@ -5,6 +5,7 @@ function setupModel(data) {
   const clips = data.animations;
   const mixer = new AnimationMixer(model);
   // Play all animations
+  //TOD animation handler
   clips.forEach(function (clip) {
     mixer.clipAction(clip).play();
   });

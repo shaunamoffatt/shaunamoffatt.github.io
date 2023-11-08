@@ -14,6 +14,7 @@ module.exports = {
   output: {
     filename: "index.js",
     path: path.resolve(__dirname, "../dist"),
+   // assetModuleFilename: 'static/[hash][ext][query]'
   },
   devtool: "source-map",
   plugins: [
@@ -35,6 +36,7 @@ module.exports = {
       {
         test: /\.html$/,
         loader: "html-loader",
+       
       },
 
       // JS
@@ -50,12 +52,17 @@ module.exports = {
         use: [MiniCSSExtractPlugin.loader, "css-loader"],
       },
 
-      // Images
+      // // Images
       {
-        test: /\.(jpg|png|gif|svg)$/,
+        //test: /\.(jpg|png|gif)$/,
+        test: /\.(png|jpg|jpeg|gif)$/i,
+        type: 'asset',
+        generator: {
+          emit: false,
+        },
         use: [
           {
-            loader: "file-loader",
+           loader: "file-loader",
             options: {
               outputPath: "static/textures/",
             },

@@ -12,10 +12,14 @@ module.exports = merge(commonConfiguration, {
   mode: "development",
   devServer: {
     static: {
-        directory: path.join(__dirname, 'src'),
-      },
+      directory: path.join(__dirname, "src"),
+    },
     port: portFinderSync.getPort(8080),
     open: true,
     https: false,
+    
+  },
+  output:{
+    assetModuleFilename: "[name].[ext]"
   },
 });

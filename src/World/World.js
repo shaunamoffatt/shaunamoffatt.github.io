@@ -34,12 +34,6 @@ class World {
     loop = new Loop(camera, scene, renderer);
     controls = mouseMovement();
     loadingManager = new LoadingManager(5);
-
-    font = preloadFont({
-      font: "././/static/Pulang.ttf",
-      characters:
-        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ?!",
-    });
     const { ambientLight, mainLight } = createLights();
 
     scene.add(ambientLight, mainLight);
@@ -86,7 +80,7 @@ class World {
     loadingManager.fileLoaded();
     scene.add(pottedplant.model);
 
-    this.debugModel(pottedplant.model);
+  //   this.debugModel(pottedplant.model);
 
     //Test simpleSprite
     sBubble = new simpleSprite(
