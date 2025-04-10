@@ -1,6 +1,6 @@
-import * as THREE from "three"
 import './style.css'
 import { World } from './World/World.js';
+
 
 async function main() {
   // Get a reference to the container element

@@ -1,5 +1,5 @@
 import { PerspectiveCamera } from "three";
-import { CAMERA_STARTING_POSITION } from "../Constants";
+import { CAMERA_POSITIONS } from "../Constants";
 
 const camera = new PerspectiveCamera(
   40,
@@ -9,8 +9,8 @@ const camera = new PerspectiveCamera(
 );
 
 function createCamera() {
-  var pos = CAMERA_STARTING_POSITION;
-  console.log(CAMERA_STARTING_POSITION);
+  var pos = CAMERA_POSITIONS[0];
+  //console.log(CAMERA_STARTING_POSITION);
   camera.position.set(pos.x, pos.y, pos.z);
 
   return camera;

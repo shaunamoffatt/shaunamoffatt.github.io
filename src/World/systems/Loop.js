@@ -1,45 +1,70 @@
-import { Clock, Vector3 } from "three";
+import * as THREE from "three";
+import CameraControls from "camera-controls";
 import { cursor } from "./Controls.js";
 import * as CONSTANTS from "../Constants.js";
-import { Stage, dialogue } from "./Stages.js";
+import { Stage } from "./Stages.js";
+import { updateText } from "../components/dialogue.js";
+import * as dat from "dat.gui";
+import Stats from "three/examples/jsm/libs/stats.module.js"; // Only if using modules
 
-const clock = new Clock();
-let dialogueText = "";
-let changeState = true;
-let dialogueCount = -1;
-let textChangeTime = 0;
-let characterCount = 0;
-const textSpeed = 0.1;
-let characters = [];
+// Install camera-controls with THREE instance
+CameraControls.install({ THREE: THREE });
+const clock = new THREE.Clock();
 let stage = new Stage();
 let transitioning = false;
+var animationSpeed = 0.5;
+
+// Create FPS monitor
+const stats = new Stats();
+
+
+//TODO Make this a component
+const gui = new dat.GUI();
 
 class Loop {
   constructor(camera, scene, renderer) {
     this.camera = camera;
     this.scene = scene;
     this.renderer = renderer;
-    this.updatables = [];
-    this.textUpdatables = [];
+    this.dialogueText = null;
     this.sprites = [];
+    this.irelandFrame = null;
+    this.debugObject = null;
+    //this.shaunaModel = null;
+    this.animatedModels = [];
+    this.controls = new CameraControls(camera, renderer.domElement);
+    // Disable zoom (dolly)
+    this.controls.dollyToCursor = true;
+    this.controls.dollySpeed = 0; // Zoom speed
+    this.controls.enabled = false;
+  }
+
+  initCameraLookAtQuaternions() {
+    //Getting the target Quaternions
+    //this.camera.lookAt(this.irelandFrame.position)
+    //targetLookAtIreland = new THREE.Quaternion(this.camera.quaternion);
+    //this.camera.lookAt(this.shaunaModel.model.position.x, 10,-10)
+    //targetLookAtShauna = new THREE.Quaternion(this.camera.quaternion);
   }
 
   start() {
+    this.debugCamera();
     //init and handle event Listener for scrolling wheel
     this.scrollEvent();
+    //init camera targets
+    this.initCameraLookAtQuaternions();
+    document.body.appendChild(stats.dom);
+
     //TODO clicking
     window.addEventListener("click", () => {
       console.log("You knocked?");
     });
-
     this.renderer.setAnimationLoop(() => {
       // tell every animated object to tick forward one frame
       this.tick();
-
       // render a frame
-      this.renderer.render(this.scene, this.camera);
 
-      //this.animate();
+      this.renderer.render(this.scene, this.camera);
     });
   }
 
@@ -47,24 +72,19 @@ class Loop {
     window.addEventListener(
       "wheel",
       (e) => {
-        //this.camera.position.x += e.deltaY / 100; // ? -e.deltaY : e.wheelDelta/40;
-
-        console.log("Updating camera in loop.js ..deltay:" + e.deltaY);
         //Stage is used to keep track of where the user has scrolled
-        if (transitioning == false) {
-          if (e.deltaY < 0) stage.nextStage();
-          else stage.previousStage();
+        if (transitioning === false) {
+          if (e.deltaY < 0) {
+            stage.nextStage();
+          } else {
+            stage.previousStage();
+          }
           transitioning = true;
+          console.log(stage.getCurrentStage());
         }
-        // console.log("NEW STAGE::" + stage.getCurrentStage);
       },
       { passive: true }
     );
-  }
-
-  animate() {
-    this.renderer.render(this.scene, this.camera);
-    setTimeout(this.animate, 20);
   }
 
   stop() {
@@ -72,36 +92,41 @@ class Loop {
   }
 
   tick() {
+    stats.update();  // Update FPS counter
+    gui.updateDisplay();
     // only call the getDelta function once per frame!
     const delta = clock.getDelta();
     const elapsedTime = clock.getElapsedTime();
+   
     //In transision
     if (transitioning) {
       // Move the camera to next location
-      this.lerpCamera(CONSTANTS.CAMERA_POSITIONS[stage.getCurrentStage()]);
+      var pos = CONSTANTS.CAMERA_POSITIONS[stage.getCurrentStage()];
+      this.controls.setPosition(pos.x, pos.y, pos.z, true);
+
+      //if the distance is small between camera and target postion stop transitioning
+      if (this.camera.position.distanceTo(pos) < 0.01) {
+        transitioning = false;
+       
+        gui.updateDisplay();
+      }
       //Move the character to the next animation/location
     }
-    //console.log(`The last frame rendered in ${delta * 1000} milliseconds`,);
-    // console.log("looping on object")
-    //Update camera
-    // this.cameraPosition();
-    for (const object of this.updatables) {
-      //console.log(object.model)
-      var animationSpeed = 3;
-
-      //this will be used for animated objects need an if here//object.tick(delta);
-      if (object.model.name == CONSTANTS.SHAUNA_MODEL) {
-        //console.log(object.model.position);
-        //object.model.rotation.z = elapsedTime;
-        //if (object.model.position.x > -2) object.model.position.x -= 0.1;
-        this.camera.lookAt(object.model.position.x, 10, -10);
-        //console.log(object.model.position);
-      }
-      object.model.tick(delta * animationSpeed);
-    }
-
+    //Update what the camera is looking at
+    //console.log("CURRENT STAGE", stage.getCurrentStage());
+    //console.log(CONSTANTS.CAMERA_POSITIONS[stage.getCurrentStage()]);
+    var lookatPos = CONSTANTS.CAMERA_LOOKAT_POSITIONS[stage.getCurrentStage()];
+    this.controls.setTarget(lookatPos.x, lookatPos.y, lookatPos.z, true);
     //updateText
     this.updateText(delta);
+    //update controls
+    this.controls.update(delta);
+    //update shauna model animation
+    if (this.animatedModels.length !== 0) {
+      this.animatedModels.forEach((model) => {
+        model.tick(delta * animationSpeed);
+      });
+    }
     //UpdateSprites
     this.updateSprites(delta);
   }
@@ -110,84 +135,90 @@ class Loop {
     for (const sprite of this.sprites) {
       //sprite.update(delta);
       var speed = 10;
-      if (sprite.name == CONSTANTS.SPEECH_BUBBLE_SPRITE) {
-        //sprite.move(0, 0, -1, delta, speed);
+      if (sprite.name === CONSTANTS.SPEECH_BUBBLE_SPRITE) {
+        //TODO FIX
+        //console.log("SPIRTE:", sprite)
+        //console.log("SPRIIIIITE",sprite.name)
+        //sprite.sprite.lookAt(this.camera.position);
       }
     }
   }
 
   updateText(delta) {
     //Update Text
-    textChangeTime += delta;
-
-    for (const text of this.textUpdatables) {
-    
-      //console.log(text)
-      if (changeState) {
-        changeState = false;
-        this.resetDialogue();
-        console.log("Stage dialogue count" + stage.currentDialogueCount())
-        if (dialogueCount >= stage.currentDialogueCount()) {
-          dialogueCount = -1;
-          console.log("RESET dialogue count");
-        }
-          dialogueCount++;
-          //get the characters of the new word
-          console.log("current stage: "+ stage.getCurrentStage());
-          console.log("dialogue count: " + dialogueCount);
-          console.log(dialogue[stage.getCurrentStage()][dialogueCount]);
-          characters =
-          dialogue[stage.getCurrentStage()][dialogueCount].split("");
-          dialogueText = characters[characterCount];
-      }
-
-      if (textChangeTime > textSpeed) {
-        characterCount++;
-        textChangeTime = 0;
-        if (characterCount < characters.length) {
-          dialogueText += characters[characterCount];
-        }
-      }
-      text.text = dialogueText;
-      text.sync;
-
-      if (dialogueText == dialogue[stage.getCurrentStage()][dialogueCount]) {
-        dialogueText+= " ";
-        //if it isnt the last dialogue then move to the next one
-        if(dialogueCount < stage.currentDialogueCount())
-          setTimeout(() => (changeState = true), 2000);
-      }
-    }
+    this.dialogueText = updateText(delta, stage.getCurrentStage());
+    this.dialogueText.dialogueText.lookAt(this.camera.position);
+   
   }
 
-  resetDialogue() {
-    dialogueText = "";
-    characterCount = 0;
+  lerpCamera(positionTarget) {}
+
+  debugCamera() {
+    // Add a control to the GUI for a property with an associated function
+    // Define an object with properties you want to control
+    const controlParams = {
+      distance: this.controls.distance,
+      x: this.camera.position.x,
+      y: this.camera.position.y,
+      z: this.camera.position.z,
+    };
+    // Add controls to the GUI
+    gui
+      .add(controlParams, "distance", 1, 200)
+      .name("Distance")
+      .onChange(() => {
+        this.controls.dollyTo(controlParams.distance, true);
+      })
+      .listen();
+    //camera
+    gui
+      .add(controlParams, "x", -100, 100)
+      .min(-50)
+      .max(50)
+      .step(0.001)
+      .name("Camera X")
+      .onChange(() => {
+        this.controls.setPosition(
+          controlParams.x,
+          this.camera.position.y,
+          this.camera.position.z,
+          true
+        );
+      })
+      .listen();
+    gui
+      .add(controlParams, "y")
+      .min(-50)
+      .max(50)
+      .step(0.001)
+      .name("Camera Y")
+      .onChange(() => {
+        this.controls.setPosition(
+          this.camera.position.x,
+          controlParams.y,
+          this.camera.position.z,
+          true
+        );
+      })
+      .listen();
+    gui
+      .add(controlParams, "z")
+      .min(-50)
+      .max(50)
+      .step(0.001)
+      .name("Camera Z")
+      .onChange(() => {
+        this.controls.setPosition(
+          this.camera.position.x,
+          this.camera.position.y,
+          controlParams.z,
+          true
+        );
+      })
+      .listen();
   }
 
-  lerpCamera(pos) {
-    // camera will lerp closer to target on each frame
-    this.camera.position.lerp(pos, 0.1);
-    //if the distance is small between camera and target postion stop transitioning
-    if (this.camera.position.distanceTo(pos) < 0.01) {
-      transitioning = false;
-      changeState = true;
-      this.resetDialogue();
-    }
-  }
 
-  cameraPosition() {
-    // this.camera.lookAt(0, 10, -10); //set the camera to look at where my character is
-    var destinationZ = 17;
-    if (this.camera.position.z > destinationZ) {
-      //this.camera.position.z -= 0.1;
-    }
-    //this.camera.position.x = Math.sin(-cursor.x * Math.PI * 2);
-    //this.camera.position.x = -cursor.x * 0.5;
-    //this.camera.position.y = cursor.y;
-    //this.camera.position.z = Math.cos(-cursor.x * Math.PI * 2) * 3;
-    //this.camera.position.y = cursor.y;
-  }
 }
 
 export { Loop };

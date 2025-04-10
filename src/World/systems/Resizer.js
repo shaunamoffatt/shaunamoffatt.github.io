@@ -1,4 +1,4 @@
-import { CAMERA_STARTING_POSITION } from "../Constants";
+import { CAMERA_POSITIONS } from "../Constants";
 
 const setSize = (container, camera, renderer) => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -8,9 +8,9 @@ const setSize = (container, camera, renderer) => {
   renderer.setPixelRatio(window.devicePixelRatio);
   //Check if portrait or landscape
   if (camera.aspect < 0.9) {
-    camera.position.z = CAMERA_STARTING_POSITION.z * (1 + camera.aspect);
+    camera.position.z = CAMERA_POSITIONS[0].z * (1 + camera.aspect);
   } else {
-    camera.position.z = CAMERA_STARTING_POSITION.z;
+    camera.position.z = CAMERA_POSITIONS[0].z;
   }
   camera.rotation.x = -0.2;
 };

@@ -2,8 +2,29 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
+  stats: {
+    errorDetails: true,
+  },
+  //target: "node",
+ // resolve: {
+   // modules: [".", "node_modules"],
+    //extensions: [".js"],
+    //fallback: {
+      // util: require.resolve("util/"),
+      // extensions: [".js", ".jsx", ".ts", ".tsx"],
+      // fullySpecified: false,
+      // fs: false,
+      // path: require.resolve("path-browserify"),
+      // child_process: false,
+      // worker_threads: false,
+      // inpector: false,
+      // "@swc/core": false,
+      // modules: ["core"],
+    //},
+  //},
   mode: "production",
   performance: {
     //hints: false,
@@ -14,10 +35,11 @@ module.exports = {
   output: {
     filename: "index.js",
     path: path.resolve(__dirname, "../dist"),
-   // assetModuleFilename: 'static/[hash][ext][query]'
+    // assetModuleFilename: 'static/[hash][ext][query]'
   },
   devtool: "source-map",
   plugins: [
+    new NodePolyfillPlugin(),
     new CopyWebpackPlugin({
       patterns: [{ from: path.resolve(__dirname, "../static") }],
     }),
@@ -36,7 +58,6 @@ module.exports = {
       {
         test: /\.html$/,
         loader: "html-loader",
-       
       },
 
       // JS
@@ -56,13 +77,13 @@ module.exports = {
       {
         //test: /\.(jpg|png|gif)$/,
         test: /\.(png|jpg|jpeg|gif)$/i,
-        type: 'asset',
+        type: "asset",
         generator: {
           emit: false,
         },
         use: [
           {
-           loader: "file-loader",
+            loader: "file-loader",
             options: {
               outputPath: "static/textures/",
             },

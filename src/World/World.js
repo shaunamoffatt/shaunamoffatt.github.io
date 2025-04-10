@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import { createCamera } from "./components/camera.js";
 import { createLights } from "./components/lights.js";
 import { createScene } from "./components/scene.js";
@@ -6,25 +5,21 @@ import { mouseMovement } from "./systems/Controls.js";
 import { createRenderer } from "./systems/renderer.js";
 import { Resizer } from "./systems/Resizer.js";
 import { Loop } from "./systems/Loop.js";
+import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import * as dat from "dat.gui";
-import { loadModel } from "./components/loadModel.js";
-import { Text, preloadFont } from "troika-three-text";
-import { simpleSprite } from "./components/simpleSprite.js";
-import * as CONSTANTS from "./Constants";
+import { models, sprites } from "./objects/modelConstants.js";
+import { initDefaultText } from "./components/dialogue.js";
 import { LoadingManager } from "./components/loadingManager.js";
 
 const gui = new dat.GUI();
-
 let camera;
 let renderer;
 let scene;
 let loop;
 let controls;
-let myModel = new THREE.Object3D();
-let myText = new Text();
-let font;
-let sBubble;
-let loadingManager; 
+let loadingManager;
+let myText;
+let myModel; //used for debug
 
 class World {
   constructor(container) {
@@ -33,84 +28,46 @@ class World {
     scene = createScene();
     loop = new Loop(camera, scene, renderer);
     controls = mouseMovement();
-    loadingManager = new LoadingManager(5);
-    const { ambientLight, mainLight } = createLights();
+    //TODO used for debuming
+    this.gizmo = new TransformControls(camera, renderer.domElement);
+    //Number of things to load are all the models and sprite from the modelContstant class
+    loadingManager = new LoadingManager(models.length);
+    const { ambientLight, mainLight, ceilingLight, windowLight } = createLights();
+    scene.add(ambientLight, mainLight, ceilingLight,ceilingLight.target,windowLight);
 
-    scene.add(ambientLight, mainLight);
-
+    this.gizmo.attach(ceilingLight);
+    scene.add(this.gizmo);
     const resizer = new Resizer(container, camera, renderer);
   }
 
   async init() {
+    //Load in the models described in the modelsConstant file
+    await models.forEach(async (model) => {
+      var loadedmodel = await loadingManager.loadAnimatedModel(model);
+      scene.add(loadedmodel.model);
+      //Add the animating shaunaModel to the
+      if (model.name === "shauna_Model") {
+        loop.shaunaModel = loadedmodel;
+        loop.animatedModels.push(loadedmodel.model);
+      }
+      if (model.debug === "true") {
+        this.debugModel(loadedmodel.model);
+         //loop.debugModel = mainLight;
+        this.gizmo.attach(loadedmodel.model);
+      }
+    });
+    
 
-    myModel = await loadModel(
-      CONSTANTS.SHAUNA_MODEL,
-      "././/static/models/me.glb",
-      "././/static/textures/lambert1_Base_color.png",
-      1
-    );
-  //1
-  loadingManager.fileLoaded();
-    scene.add(myModel.model);
-    loop.updatables.push(myModel);
-   // console.log("My model in init :", myModel);
-
-    var room = await loadModel(
-      "room1",
-      "././/static/models/room1.glb",
-      "././/static/textures/room1_tex.png",
-      1,
-      6,
-      0,
-      0
-    );
-    scene.add(room.model);
-    //2
-    loadingManager.fileLoaded();
-    var pottedplant = await loadModel(
-      "pottedplant",
-      "././/static/models/pottedplant.glb",
-      "././/static/textures/potteplant_tex.jpg",
-      1,
-      -8.3,
-      0,
-      -6
-    );
-    //3
-    loadingManager.fileLoaded();
-    scene.add(pottedplant.model);
-
-  //   this.debugModel(pottedplant.model);
-
-    //Test simpleSprite
-    sBubble = new simpleSprite(
-      CONSTANTS.SPEECH_BUBBLE_SPRITE,
-      3.75, //x
-      15.2, //y
-      -1, //z
-      "././/static/textures/sBubble1.png", //url
-      8,
-      6 //scale
-    );
-    scene.add(sBubble.sprite);
-    //4
-    loadingManager.fileLoaded();
-    loop.sprites.push(sBubble);
-   // console.log(sBubble);
-
-    // Set properties to configure:
-    myText.fontSize = 0.75;
-    myText.position.set(1.22, 16.4, 0.5);
-    myText.color = "black";
-    myText.font = "././/static/Pulang.ttf";
-    scene.add(myText);
-    //5
-    loadingManager.fileLoaded();
-    //myText.sync;
-    loop.textUpdatables.push(myText);
-
-    // this.debugCameraAndMe();
-    loadingManager.checkLoadCompletion();
+    //LOAD DIALOGUE
+    myText = await initDefaultText();
+    //myText.text =  "INITIAL TEXTER";
+    //console.log(myText.dialogueText);
+    scene.add(myText.dialogueText, myText.dialogueSprite.sprite)//,myText.textSprite, myText.sprite);
+    loop.dialogueText = myText.dialogueText;
+    loop.sprites.push(myText.dialogueSprite);
+    //this.gizmo.attach(myText.dialogueSprite.sprite);
+    console.log(myText.sprite);
+    this.debugModel(myText.dialogueSprite.sprite);
   }
 
   //Handy function for figuring out where to place models
@@ -120,60 +77,30 @@ class World {
       .min(-50)
       .max(50)
       .step(0.01)
-      .name(model.name + " X");
+      .name(model.name + " X").listen();
     gui
       .add(model.position, "y")
       .min(-50)
       .max(50)
       .step(0.01)
-      .name(model.name + " y");
+      .name(model.name + " y").listen();
     gui
       .add(model.position, "z")
       .min(-50)
       .max(50)
       .step(0.01)
-      .name(model.name + " z");
+      .name(model.name + " z").listen();
   }
 
-  debugCameraAndMe() {
+  debughText() {
     gui
-      .add(myModel.model.position, "x")
+      .add(myText.dialogueText.position, "x")
       .min(-50)
       .max(50)
       .step(0.01)
       .name("me X");
-    gui
-      .add(myModel.model.position, "y")
-      .min(-50)
-      .max(50)
-      .step(0.01)
-      .name("me y");
-    gui
-      .add(myModel.model.position, "z")
-      .min(-50)
-      .max(50)
-      .step(0.01)
-      .name("me z");
-    //camera
-    gui
-      .add(camera.position, "x")
-      .min(-100)
-      .max(100)
-      .step(0.01)
-      .name("Camera X");
-    gui
-      .add(camera.position, "y")
-      .min(-100)
-      .max(100)
-      .step(0.01)
-      .name("Camera Y");
-    gui
-      .add(camera.position, "z")
-      .min(-100)
-      .max(100)
-      .step(0.01)
-      .name("Camera Z");
   }
+
   render() {
     renderer.render(scene, camera);
   }

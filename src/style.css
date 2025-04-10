@@ -41,16 +41,18 @@ label{
   height: 4em;
   background-color: rgba(255, 0, 132, 0);
 }
-
-
+.footer-content{
+  padding-right:40px;
+  margin-top:0px;
+  float:right;
+}
 
 .icon-style {
-  height:40px;
-  margin-left:20px;
-  margin-top:5px;
+  height:50px;
+  margin-left:10px;
+  margin-top:0px;
 }
 
 .icon-style:hover {
-
-  padding:5px;
+  padding:2px;
 }
